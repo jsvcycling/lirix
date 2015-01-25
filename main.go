@@ -18,7 +18,7 @@ type RawCurrentData struct {
 	LocationName string `json:"name"`
 
 	System struct {
-		LocationCountry string `json:"country"`
+		Country string `json:"country"`
 		Sunrise int `json:"sunrise"`
 		Sunset int `json:"sunset"`
 	} `json:"sys"`
@@ -174,6 +174,7 @@ func getCurrentData(id string) CurrentData {
 
 	var ret CurrentData
 	ret.LocationId = strconv.Itoa(raw_data.LocationId)
+	ret.DisplayName = raw_data.LocationName + ", " + raw_data.System.Country
 
 	var t time.Time
 	t = time.Unix(int64(raw_data.UnixTime), 0)
@@ -267,8 +268,8 @@ func main() {
 	var templates = template.Must(template.ParseGlob("views/*"))
 
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
-		rows, _ := db.Query("SELECT * FROM locations;")
-		cnt, _ := db.Query("SELECT COUNT(*) FROM locations;")
+		rows, _ := db.Query("SELECT * FROM locations;", nil)
+		cnt, _ := db.Query("SELECT COUNT(*) FROM locations;", nil)
 		cnt.Next()
 		var count int
 		cnt.Scan(&count)
@@ -309,7 +310,7 @@ func main() {
 	http.HandleFunc("/detail", func(res http.ResponseWriter, req *http.Request) {
 		result := getDetailedData(req.URL.Query().Get("id"))
 
-		row, _ := db.Query("SELECT display_name FROM locations WHERE id = \"" + req.URL.Query().Get("id") + "\" LIMIT 1")
+		row, _ := db.Query("SELECT display_name FROM locations WHERE id = \"" + req.URL.Query().Get("id") + "\" LIMIT 1", nil)
 		row.Next()
 		var display_name string
 		row.Scan(&display_name)
@@ -324,18 +325,24 @@ func main() {
 	})
 
 	http.HandleFunc("/add", func(res http.ResponseWriter, req *http.Request) {
-		db.Exec("INSERT INTO locations (id, display_name) VALUES('" + req.URL.Query().Get("id") + "', '" + req.URL.Query().Get("name") + "');", nil)
+		fmt.Println("Attempting to add new location...")
 
-		fmt.Println(req.URL.Query().Get("id"))
-		fmt.Println(req.URL.Query().Get("name"))
+		data := getCurrentData(req.URL.Query().Get("id"))
 
-		http.Redirect(res, req, "/", 301)
+		_, err := db.Exec("INSERT INTO locations (id, display_name) VALUES('" + req.URL.Query().Get("id") + "', '" + data.DisplayName + "');", nil)
+
+		fmt.Println(err)
+
+		http.Redirect(res, req, "/", http.StatusFound)
 	})
 
 	http.HandleFunc("/delete", func(res http.ResponseWriter, req *http.Request) {
-		db.Exec("DELETE FROM locations WHERE id = \"" + req.URL.Query().Get("id") + "\";")
+		fmt.Println("Attempting to remove location...")
+		fmt.Println(req.URL.Query().Get("id"))
 
-		http.Redirect(res, req, "/", 301)
+		db.Exec("DELETE FROM locations WHERE id = " + req.URL.Query().Get("id") + " LIMIT 1;", nil)
+
+		http.Redirect(res, req, "/", http.StatusFound)
 	})
 
 	http.ListenAndServe(":3000", nil)

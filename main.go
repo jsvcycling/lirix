@@ -137,13 +137,28 @@ func parseWeatherData(data interface{}, timestamp bool) WeatherData {
 			}
 		case "clouds":
 			val2 := val.(map[string]interface{})
-			ret.CloudCoverage = val2["all"].(float64)
+			for key3, val3 := range val2 {
+				switch key3 {
+				case "all":
+					ret.CloudCoverage = val3.(float64)
+				}
+			}
 		case "rain":
 			val2 := val.(map[string]interface{})
-			ret.RainHeight = val2["3h"].(float64)
+			for key3, val3 := range val2 {
+				switch key3 {
+				case "3h":
+					ret.RainHeight = val3.(float64)
+				}
+			}
 		case "snow":
 			val2 := val.(map[string]interface{})
-			ret.SnowHeight = val2["3h"].(float64)
+			for key3, val3 := range val2 {
+				switch key3 {
+				case "3h":
+					ret.SnowHeight = val3.(float64)
+				}
+			}
 		}
 	}
 

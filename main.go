@@ -295,6 +295,10 @@ func main() {
 		templates.ExecuteTemplate(res, "index", tmpl_data)
 	})
 
+	http.HandleFunc("/about", func(res http.ResponseWriter, req *http.Request) {
+		templates.ExecuteTemplate(res, "about", nil)
+	})
+
 	/*http.HandleFunc("/search_results", func(res http.ResponseWriter, req *http.Request) {
 		results := getSearchResultData(req.URL.Query().Get("q"))
 

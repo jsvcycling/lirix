@@ -41,30 +41,6 @@ type DetailedWeather struct {
 	Data []WeatherData
 }
 
-type MultiDayWeather struct {
-	LocationName string
-	Count int
-	Data []struct {
-		TempDay float64
-		TempMin float64
-		TempMax float64
-		TempNight float64
-		TempEve float64
-		TempMorn float64
-
-		Humidity float64
-
-		WindSpeed float64
-		WindDirection string
-		WindGusts float64
-
-		CloudCoverage float64
-
-		RainHeight float64
-		SnowHeight float64
-	}
-}
-
 func parseTimestamp(t1 float64) string {
 	var t2 time.Time
 	t2 = time.Unix(int64(t1), 0)
@@ -205,59 +181,6 @@ func parseDetailed(res *http.Response) DetailedWeather {
 	return ret
 }
 
-func parseMultiDay(res *http.Response) MultiDayWeather {
-	var ret MultiDayWeather
-
-	body, _ := ioutil.ReadAll(res.Body)
-	var tmp interface{}
-	json.Unmarshal(body, &tmp)
-
-	data := tmp.(map[string]interface{})
-	for key, val := range data {
-		switch key {
-		case "cnt":
-			ret.Count = val.(int)
-		case "list":
-			val2 := val.(map[int]interface{})
-			for i := 0; i < ret.Count; i++ {
-				val3 := val2[i].(map[string]interface{})
-				for key4, val4 := range val3 {
-					switch key4 {
-					case "dt":
-						// TODO
-					case "temp":
-						val5 := val4.(map[string]interface{})
-						ret.Data[i].TempDay = val5["day"].(float64)
-						ret.Data[i].TempMin = val5["min"].(float64)
-						ret.Data[i].TempMax = val5["max"].(float64)
-						ret.Data[i].TempNight = val5["night"].(float64)
-						ret.Data[i].TempEve = val5["eve"].(float64)
-						ret.Data[i].TempMorn = val5["morn"].(float64)
-					case "humidity":
-						ret.Data[i].Humidity = val4.(float64)
-					case "wind":
-						val5 := val4.(map[string]interface{})
-						ret.Data[i].WindSpeed = val5["speed"].(float64)
-						// TODO: Wind Direction
-						ret.Data[i].WindGusts = val5["gust"].(float64)
-					case "clouds":
-						val5 := val4.(map[string]interface{})
-						ret.Data[i].CloudCoverage = val5["all"].(float64)
-					case "rain":
-						val5 := val4.(map[string]interface{})
-						ret.Data[i].RainHeight = val5["3h"].(float64)
-					case "snow":
-						val5 := val4.(map[string]interface{})
-						ret.Data[i].SnowHeight = val5["3h"].(float64)
-					}
-				}
-			}
-		}
-	}
-
-	return ret
-}
-
 func main() {
 	locations := make(map[string]string)
 
@@ -316,18 +239,6 @@ func main() {
 		}
 
 		templates.ExecuteTemplate(res, "detail", data)
-	})
-
-	// Get multiday information about a single location.
-	http.HandleFunc("/multiday", func(res http.ResponseWriter, req *http.Request) {
-		//qs := req.URL.Query()
-		//var weather MultiDayWeather
-
-		//resp, _ := http.Get("http://api.openweathermap.org/data/2.5/forecast/daily?id=" + qs.Get("location"))
-		//weather = parseMultiDay(resp)
-		// TODO: Add location information
-
-		templates.ExecuteTemplate(res, "multiday", nil)
 	})
 
 	http.ListenAndServe(":3000", nil)

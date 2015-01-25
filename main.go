@@ -218,10 +218,6 @@ func main() {
 		templates.ExecuteTemplate(res, "about", nil)
 	})
 
-	http.HandleFunc("/help", func(res http.ResponseWriter, req *http.Request) {
-		templates.ExecuteTemplate(res, "help", nil)
-	})
-
 	// Get detailed information about a single location.
 	http.HandleFunc("/detail", func(res http.ResponseWriter, req *http.Request) {
 		qs := req.URL.Query()

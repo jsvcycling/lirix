@@ -79,14 +79,11 @@ func parseWindDir(dir float64) string {
 	if dir >= 303.75 && dir < 326.25 { return "NW" }
 	if dir >= 326.25 && dir < 348.75 { return "NNW" }
 	
-	return "UNDEFINED"
+	return "Unavailable"
 }
 
 func parseWeatherData(data interface{}, timestamp bool) WeatherData {
 	var ret WeatherData
-
-	// Default Data
-	ret.WindDirection = "Unavailable"
 
 	tmp := data.(map[string]interface{})
 	for key, val := range tmp {
@@ -120,7 +117,12 @@ func parseWeatherData(data interface{}, timestamp bool) WeatherData {
 		case "weather":
 			val2 := val.([]interface{})
 			val3 := val2[0].(map[string]interface{})
-			ret.WeatherDescription = val3["description"].(string)
+			for key4, val4 := range val3 {
+				switch key4 {
+				case "description":
+					ret.WeatherDescription = val4.(string)
+				}
+			}
 		case "wind":
 			val2 := val.(map[string]interface{})
 			for key3, val3 := range val2 {
@@ -188,10 +190,14 @@ func main() {
 
 	// Sample data
 	locations["5128581"] = "New York City, New York"
+	locations["4140963"] = "Washington, D.C."
 	locations["5368361"] = "Los Angeles, California"
+	locations["4259418"] = "Indianapolis, Indiana"
 	locations["4684888"] = "Dallas, Texas"
+	locations["6077243"] = "Montreal, Québec"
+	locations["3169070"] = "Rome, Italy"
 	locations["2643743"] = "London, England"
-	locations["524901"] = "Moscow, Russia"
+	locations["2759794"] = "Amsterdam, Netherlands"
 
 	// Shows the current weather information for each of the selected locations.
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {

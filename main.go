@@ -295,7 +295,7 @@ func main() {
 		templates.ExecuteTemplate(res, "index", tmpl_data)
 	})
 
-	http.HandleFunc("/search_results", func(res http.ResponseWriter, req *http.Request) {
+	/*http.HandleFunc("/search_results", func(res http.ResponseWriter, req *http.Request) {
 		results := getSearchResultData(req.URL.Query().Get("q"))
 
 		tmpl_data := map[string]interface{} {
@@ -305,7 +305,7 @@ func main() {
 		}
 
 		templates.ExecuteTemplate(res, "search_results", tmpl_data)
-	})
+	})*/
 
 	http.HandleFunc("/detail", func(res http.ResponseWriter, req *http.Request) {
 		result := getDetailedData(req.URL.Query().Get("id"))
@@ -324,7 +324,7 @@ func main() {
 		templates.ExecuteTemplate(res, "detail", tmpl_data)
 	})
 
-	http.HandleFunc("/add", func(res http.ResponseWriter, req *http.Request) {
+	/*http.HandleFunc("/add", func(res http.ResponseWriter, req *http.Request) {
 		fmt.Println("Attempting to add new location...")
 
 		data := getCurrentData(req.URL.Query().Get("id"))
@@ -343,7 +343,7 @@ func main() {
 		db.Exec("DELETE FROM locations WHERE id = " + req.URL.Query().Get("id") + " LIMIT 1;", nil)
 
 		http.Redirect(res, req, "/", http.StatusFound)
-	})
+	})*/
 
 	http.ListenAndServe(":3000", nil)
 }

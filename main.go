@@ -56,7 +56,7 @@ func parseTime(t1 float64) string {
 func parseDateTime(t1 float64) string {
 	var t2 time.Time
 	t2 = time.Unix(int64(t1), 0)
-	return t2.Format("Mon 3:04pm")
+	return t2.Format("Mon 3:04pm (MST)")
 }
 
 func parseWindDir(dir float64) string {

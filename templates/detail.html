@@ -1,0 +1,34 @@
+{{define "detail"}}
+	{{template "header1"}}
+	<title>Lirix | {{.weather.LocationName}} Forecast</title>
+	{{template "header2"}}
+	<div class="jumbotron">
+		<div class="container">
+			<h2>Forecast for {{.weather.LocationName}}</h2>
+		</div>
+	</div>
+	<div class="container">
+		<table class="table table-hover">
+			<tr>
+				<th>Time</th>
+				<th>Description</th>
+				<th>Temperature</th>
+				<th>Humidity</th>
+				<th>Cloud Coverage</th>
+				<th>Wind</th>
+			<tr>
+			{{range .weather.Data}}
+				<tr>
+					<td>{{.TargetTime}}</td>
+					<td>{{.WeatherDescription}}</td>
+					<td>{{.Temperature}} &deg;C</td>
+					<td>{{.Humidity}}%</td>
+					<td>{{.CloudCoverage}}%</td>
+					<td>{{.WindSpeed}} mph ({{.WindDirection}})</td>
+
+				</tr>
+			{{end}}
+		</table>
+	</div>
+	{{template "footer"}}
+{{end}}

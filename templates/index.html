@@ -1,0 +1,55 @@
+{{define "index"}}
+	{{template "header1"}}
+	<title>Lirix | Overview</title>
+	{{template "header2"}}
+	<div class="container">
+		{{range .weatherdata}}
+		<a href="/detail?location={{.LocationId}}">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="row">
+						<div class="col-xs-4"><h4 class="text-left">{{.LocationName}}</h4></div>
+						<div class="col-xs-4"><h5 class="text-center text-lowercase"><b>{{.WeatherDescription}}</b></h5></div>
+						<div class="col-xs-4"><h5 class="text-right">{{.TargetTime}}</h5></div>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="row">
+								<div class="col-md-3">Sunrise:</div><div class="col-md-9">{{.SunriseTime}}</div>
+								<div class="col-md-3">Sunset:</div><div class="col-md-9">{{.SunsetTime}}</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="row">
+								<div class="col-md-2">Temp:</div><div class="col-md-10">{{.Temperature}} &deg;C</div>
+								<div class="col-md-2">Humidity:</div><div class="col-md-10">{{.Humidity}}%</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="row">
+								<div class="col-md-2">Speed:</div><div class="col-md-10">{{.WindSpeed}} mph ({{.WindDirection}})</div>
+								<div class="col-md-2">Gusts:</div><div class="col-md-10">{{.WindGusts}} mph</div>
+							</div>
+						</div>
+					</div>
+					<hr />
+					<div class="row">
+						<div class="col-md-4">
+							Cloud Coverage: {{.CloudCoverage}}%<br />
+						</div>
+						<div class="col-md-4">
+							<div class="row">
+								<div class="col-md-2">Rain:</div><div class="col-md-10">{{.RainHeight}}mm (in the past 3 hours)</div>
+								<div class="col-md-2">Snow:</div><div class="col-md-10">{{.SnowHeight}}mm (in the past 3 hours)</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</a>
+		{{end}}
+	</div>
+	{{template "footer"}}
+{{end}}
